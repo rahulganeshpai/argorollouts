@@ -5,3 +5,4 @@ metadata:
   labels:
     name: dev
     type: namespace
+    istio-injection: enabled

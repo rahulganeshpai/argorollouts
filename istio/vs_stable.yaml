@@ -1,0 +1,40 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vs-rollouts
+  namespace: dev
+  labels:
+    name: vs-rollouts
+    type: virtualservice
+spec:
+  hosts:
+    - svc-rollouts.dev.svc.cluster.local
+  http:
+    - name: primary
+      route:
+        - destination:
+            host: svc-rollouts.dev.svc.cluster.local
+            subset: stable
+          weight: 100
+        - destination:
+            host: svc-rollouts.dev.svc.cluster.local
+            subset: canary
+          weight: 0
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dr-rollouts
+  namespace: dev
+  labels:
+    name: dr-rollouts
+    type: destinationrule
+spec:
+  host: svc-rollouts.dev.svc.cluster.local
+  subsets:
+    - name: stable
+      labels:
+        name: rollouts-dev
+    - name: canary
+      labels:
+        name: rollouts-dev

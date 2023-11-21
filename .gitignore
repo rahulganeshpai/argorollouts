@@ -6,4 +6,4 @@
 .vscode
 
 #istio
-istio-1.20.0/
+**/istio-1.20.0/
