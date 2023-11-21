@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: depl-helloworld
+  namespace: dev
+  labels:
+    name: depl-helloworld
+spec:
+  selector:
+    matchLabels:
+      app: pod-helloworld
+  template:
+    metadata:
+      name: pod-helloworld
+      labels:
+        app: pod-helloworld
+    spec:
+      containers:
+        - name: helloworld
+          image: helloworld:0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: helloworld-port
+              containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+
+          startupProbe:
+            httpGet:
+              path: /
+              port: helloworld-port
+            periodSeconds: 30
+            timeoutSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: helloworld-port
+            initialDelaySeconds: 1
+            periodSeconds: 30
+            timeoutSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: helloworld-port
+            initialDelaySeconds: 1
+            periodSeconds: 30
+            timeoutSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
