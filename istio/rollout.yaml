@@ -7,39 +7,45 @@ metadata:
     name: rollouts-dev
     type: rollout
 spec:
+  replicas: 1
   revisionHistoryLimit: 2
-  strategy:
-    canary:
-      # canaryService: svc-rollouts
-      # stableService: svc-rollouts
-      trafficRouting:
-        istio:
-          virtualService:
-            name: vs-rollouts
-            routes:
-              - primary
-          destinationRule:
-            name: dr-rollouts
-            canarySubsetName: canary
-            stableSubsetName: stable
-  replicas: 2
   selector:
     matchLabels:
-      app: rollouts-dev
+      name: rollouts-dev
+  strategy:
+    canary:
+      canaryService: rollouts-svc-canary
+      stableService: rollouts-svc-stable
+      trafficRouting:
+        istio:
+          virtualServices:
+            - name: rollouts-vs1
+              routes:
+                - primary
+            - name: rollouts-vs2
+              routes:
+                - secondary
+      steps:
+        - setWeight: 20
+        - pause: { duration: 10s }
+        - setWeight: 40
+        - pause: { duration: 10s }
+        - setWeight: 80
+        - pause: { duration: 10s }
   template:
     metadata:
       labels:
-        app: rollouts-dev
-        type: rollout-app
+        name: rollouts-dev
+        type: pod
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.1
+          image: helloworld:0.0.2
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           resources:
             requests:
-              memory: 32Mi
-              cpu: 5m
+              memory: 20Mi
+              cpu: 2m
