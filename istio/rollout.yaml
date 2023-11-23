@@ -7,7 +7,7 @@ metadata:
     name: rollouts-dev
     type: rollout
 spec:
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -19,12 +19,9 @@ spec:
       trafficRouting:
         istio:
           virtualServices:
-            - name: rollouts-vs1
+            - name: rollouts-vs
               routes:
                 - primary
-            - name: rollouts-vs2
-              routes:
-                - secondary
       steps:
         - setWeight: 20
         - pause: { duration: 10s }
@@ -40,7 +37,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.2
+          image: helloworld:0.0.1
           ports:
             - name: http
               containerPort: 8080

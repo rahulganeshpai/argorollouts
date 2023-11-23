@@ -1,68 +1,16 @@
-# apiVersion: networking.istio.io/v1beta1
-# kind: VirtualService
-# metadata:
-#   name: vs-rollouts
-#   namespace: dev
-#   labels:
-#     name: vs-rollouts
-#     type: virtualservice
-# spec:
-#   hosts:
-#     # - svc-rollouts.dev.svc.cluster.local
-#     # - vs-rollouts.local
-#     - "*"
-#   gateways:
-#     - rollouts-gateway
-#   http:
-#     - name: primary
-#       match:
-#         - uri:
-#             prefix: /
-#       route:
-#         - destination:
-#             host: svc-stable.dev.svc.cluster.local
-#             port:
-#               number: 80
-#             # subset: stable
-#           weight: 100
-#         - destination:
-#             host: svc-canary.dev.svc.cluster.local
-#             port:
-#               number: 80
-#             # subset: canary
-#           weight: 0
-# ---
-# apiVersion: networking.istio.io/v1beta1
-# kind: DestinationRule
-# metadata:
-#   name: dr-rollouts
-#   namespace: dev
-#   labels:
-#     name: dr-rollouts
-#     type: destinationrule
-# spec:
-#   host: svc-rollouts.dev.svc.cluster.local
-#   subsets:
-#     - name: stable
-#       labels:
-#         name: rollouts-dev
-#     - name: canary
-#       labels:
-#         name: rollouts-dev
-
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: rollouts-vs1
+  name: rollouts-vs
   namespace: dev
   labels:
-    name: rollouts-vs1
+    name: rollouts-vs
     type: virtualservice
 spec:
   gateways:
     - rollouts-gateway
   hosts:
-    - rollouts-vs1.local
+    - rollouts-vs.local
   http:
     - name: primary
       route:
@@ -75,32 +23,4 @@ spec:
             host: rollouts-svc-canary
             port:
               number: 15372
-          weight: 0
-
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: rollouts-vs2
-  namespace: dev
-  labels:
-    name: rollouts-vs2
-    type: virtualservice
-spec:
-  gateways:
-    - rollouts-gateway
-  hosts:
-    - rollouts-vs2.local
-  http:
-    - name: secondary
-      route:
-        - destination:
-            host: rollouts-svc-stable
-            port:
-              number: 15373
-          weight: 100
-        - destination:
-            host: rollouts-svc-canary
-            port:
-              number: 15373
           weight: 0
