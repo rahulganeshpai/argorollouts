@@ -9,10 +9,10 @@ metadata:
     type: service
 spec:
   ports:
-    - port: 80
-      targetPort: http
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
-      name: http
+      name: tcp
   selector:
     name: rollouts-dev
 ---
@@ -27,9 +27,9 @@ metadata:
     type: service
 spec:
   ports:
-    - port: 80
-      targetPort: http
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
-      name: http
+      name: tcp
   selector:
     name: rollouts-dev

@@ -10,17 +10,20 @@ spec:
   gateways:
     - rollouts-gateway
   hosts:
-    - rollouts-vs.local
+    - "*"
   http:
     - name: primary
+      match:
+        - uri:
+            prefix: /
       route:
         - destination:
-            host: rollouts-svc-stable
+            host: rollouts-svc-stable.dev.svc.cluster.local
             port:
-              number: 15372
+              number: 8080
           weight: 100
         - destination:
-            host: rollouts-svc-canary
+            host: rollouts-svc-canary.dev.svc.cluster.local
             port:
-              number: 15372
+              number: 8080
           weight: 0

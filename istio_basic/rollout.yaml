@@ -7,7 +7,7 @@ metadata:
     name: rollouts-dev
     type: rollout
 spec:
-  replicas: 2
+  replicas: 3
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -39,9 +39,9 @@ spec:
         - pause: { duration: 10s }
         - setWeight: 40
         - pause: { duration: 10s }
-        - setWeight: 80
-        # - pause: { duration: 10s }
-        - pause: {}
+        - setWeight: 50
+        - pause: { duration: 10s }
+        # - pause: {}
   template:
     metadata:
       labels:
@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.2
+          image: helloworld:0.0.1
           ports:
             - name: http
               containerPort: 8080

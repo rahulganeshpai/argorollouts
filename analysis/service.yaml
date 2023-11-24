@@ -5,16 +5,16 @@ metadata:
   name: rollouts-svc-stable
   namespace: dev
   labels:
-    app: rollouts-svc-stable
+    name: rollouts-svc-stable
     type: service
 spec:
   ports:
-    - port: 80
-      targetPort: http
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
-      name: http
+      name: tcp
   selector:
-    app: rollouts-dev
+    name: rollouts-dev
 ---
 # Canary service
 apiVersion: v1
@@ -23,13 +23,13 @@ metadata:
   name: rollouts-svc-canary
   namespace: dev
   labels:
-    app: rollouts-svc-canary
+    name: rollouts-svc-canary
     type: service
 spec:
   ports:
-    - port: 80
-      targetPort: http
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
-      name: http
+      name: tcp
   selector:
-    app: rollouts-dev
+    name: rollouts-dev
