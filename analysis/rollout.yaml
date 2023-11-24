@@ -7,7 +7,7 @@ metadata:
     app: rollouts-dev
     type: rollout
 spec:
-  revisionHistoryLimit: 2
+  revisionHistoryLimit: 1
   replicas: 2
   selector:
     matchLabels:
@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.1
+          image: helloworld:0.0.2
           ports:
             - name: http
               containerPort: 8080
@@ -50,8 +50,10 @@ spec:
           - templateName: success-rate
         startingStep: 2 # delay starting analysis run until setWeight: 40%
         args:
-          - name: service-name
-            value: rollouts-vs.local
+          - name: canary-service
+            value: rollouts-svc-canary
+          - name: stable-service
+            value: rollouts-svc-stable
       trafficRouting:
         istio:
           virtualServices:
@@ -67,66 +69,3 @@ spec:
         - pause: { duration: 10s }
         - setWeight: 80
         - pause: {}
-
-
-# apiVersion: argoproj.io/v1alpha1
-# kind: Rollout
-# metadata:
-#   name: rollouts-dev
-#   namespace: dev
-#   labels:
-#     name: rollouts-dev
-#     type: rollout
-# spec:
-#   replicas: 3
-#   revisionHistoryLimit: 2
-#   selector:
-#     matchLabels:
-#       name: rollouts-dev
-#   strategy:
-#     canary:
-#       canaryMetadata:
-#         annotations:
-#           rollout: canary
-#         labels:
-#           name: rollouts-dev
-#           rollout: canary
-#       stableMetadata:
-#         annotations:
-#           rollout: stable
-#         labels:
-#           name: rollouts-dev
-#           rollout: stable
-#       canaryService: rollouts-svc-canary
-#       stableService: rollouts-svc-stable
-#       trafficRouting:
-#         istio:
-#           virtualServices:
-#             - name: rollouts-vs
-#               routes:
-#                 - primary
-#       steps:
-#         - setWeight: 20
-#         - pause: { duration: 10s }
-#         - setWeight: 40
-#         - pause: { duration: 10s }
-#         - setWeight: 50
-#         - pause: { duration: 10s }
-#         # - pause: {}
-#   template:
-#     metadata:
-#       labels:
-#         name: rollouts-dev
-#         type: pod
-#     spec:
-#       containers:
-#         - name: rollouts-dev
-#           image: helloworld:0.0.1
-#           ports:
-#             - name: http
-#               containerPort: 8080
-#               protocol: TCP
-#           resources:
-#             requests:
-#               memory: 20Mi
-#               cpu: 2m
