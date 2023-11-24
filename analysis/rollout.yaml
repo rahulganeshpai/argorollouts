@@ -1,0 +1,69 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rollouts-dev
+  namespace: dev
+  labels:
+    app: rollouts-dev
+    type: rollout
+spec:
+  revisionHistoryLimit: 2
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rollouts-dev
+  template:
+    metadata:
+      labels:
+        app: rollouts-dev
+        version: stable
+    spec:
+      containers:
+        - name: rollouts-dev
+          image: helloworld:0.0.1
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              memory: 20Mi
+              cpu: 5m
+  strategy:
+    canary:
+      canaryMetadata:
+        annotations:
+          version: canary
+        labels:
+          app: rollouts-dev
+          version: canary
+      stableMetadata:
+        annotations:
+          version: stable
+        labels:
+          app: rollouts-dev
+          version: stable
+      canaryService: rollouts-svc-canary
+      stableService: rollouts-svc-stable
+      analysis:
+        templates:
+          - templateName: success-rate
+        startingStep: 2 # delay starting analysis run until setWeight: 40%
+        args:
+          - name: service-name
+            value: rollouts-vs.local
+      trafficRouting:
+        istio:
+          virtualServices:
+            - name: rollouts-vs
+              routes:
+                - primary
+      steps:
+        - setWeight: 20
+        - pause: { duration: 10s }
+        - setWeight: 40
+        - pause: { duration: 10s }
+        - setWeight: 60
+        - pause: { duration: 10s }
+        - setWeight: 80
+        - pause: { duration: 10s }

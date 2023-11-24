@@ -10,6 +10,7 @@ cd istio-${ISTIO_VERSION}
 export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo -y
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.20/samples/addons/prometheus.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.20/samples/addons/grafana.yaml
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.20/samples/addons/kiali.yaml
 # Create dev namespace
 cd ..

@@ -14,6 +14,18 @@ spec:
       name: rollouts-dev
   strategy:
     canary:
+      canaryMetadata:
+        annotations:
+          rollout: canary
+        labels:
+          name: rollouts-dev
+          rollout: canary
+      stableMetadata:
+        annotations:
+          rollout: stable
+        labels:
+          name: rollouts-dev
+          rollout: stable
       canaryService: rollouts-svc-canary
       stableService: rollouts-svc-stable
       trafficRouting:
@@ -28,7 +40,8 @@ spec:
         - setWeight: 40
         - pause: { duration: 10s }
         - setWeight: 80
-        - pause: { duration: 10s }
+        # - pause: { duration: 10s }
+        - pause: {}
   template:
     metadata:
       labels:
@@ -37,7 +50,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.1
+          image: helloworld:0.0.2
           ports:
             - name: http
               containerPort: 8080
