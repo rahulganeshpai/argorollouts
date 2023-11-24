@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: helloworld
-          image: helloworld:0.0.1
+          image: helloworld:0.0.2
           imagePullPolicy: IfNotPresent
           ports:
             - name: helloworld-port

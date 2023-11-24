@@ -15,6 +15,10 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.20/samp
 # Create dev namespace
 cd ..
 kubectl apply -f namespace.yaml
+kubectl label namespace default istio-injection=enabled
+# Load images
+minikube image load helloworld:0.0.1
+minikube image load helloworld:0.0.2
 # Install argo-rollouts
 kubectl create namespace argo-rollouts
 kubectl label namespace argo-rollouts istio-injection=enabled
