@@ -4,14 +4,10 @@ metadata:
   name: rollouts-dev
   namespace: dev
   labels:
-    name: rollouts-dev
+    app: rollouts-dev
     type: rollout
 spec:
-  replicas: 1
-  revisionHistoryLimit: 3
-  selector:
-    matchLabels:
-      name: rollouts-dev
+  replicas: 2
   strategy:
     canary:
       canaryMetadata:
@@ -20,18 +16,29 @@ spec:
         labels:
           name: rollouts-dev
           rollout: canary
-      stableMetadata:
-        annotations:
-          rollout: stable
-        labels:
-          name: rollouts-dev
-          rollout: stable
+      # stableMetadata:
+      #   annotations:
+      #     rollout: stable
+      #   labels:
+      #     name: rollouts-dev
+      #     rollout: stable
       canaryService: rollouts-svc-canary
       stableService: rollouts-svc-stable
+      analysis:
+        templates:
+          - templateName: success-rate
+        analysisRunMetadata:
+          labels:
+            type: analysisrun
+        args:
+          - name: canary-service
+            value: rollouts-svc-canary
+          - name: stable-service
+            value: rollouts-svc-stable
       trafficRouting:
         istio:
           virtualServices:
-            - name: rollouts-vs
+            - name: rollouts-vsvc1
               routes:
                 - primary
       steps:
@@ -40,13 +47,15 @@ spec:
         - setWeight: 40
         - pause: { duration: 10s }
         - setWeight: 50
-        # - pause: { duration: 10s }
-        - pause: {}
+        - pause: { duration: 10s }
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: rollouts-dev
   template:
     metadata:
       labels:
-        name: rollouts-dev
-        type: pod
+        app: rollouts-dev
     spec:
       containers:
         - name: rollouts-dev

@@ -1,5 +1,7 @@
 # Install minikube and addons
+rm -r ~/.minikube
 minikube start --memory=8192mb --cpus=4
+# minikube start --kubernetes-version=v1.24.13
 minikube addons enable metrics-server
 minikube addons enable istio-provisioner
 minikube addons enable istio
@@ -19,6 +21,8 @@ kubectl label namespace default istio-injection=enabled
 # Load images
 minikube image load helloworld:0.0.1
 minikube image load helloworld:0.0.2
+minikube image load liveness:0.0.1
+minikube image load liveness:0.0.2
 # Install argo-rollouts
 kubectl create namespace argo-rollouts
 kubectl label namespace argo-rollouts istio-injection=enabled

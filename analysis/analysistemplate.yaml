@@ -11,16 +11,19 @@ spec:
     - name: canary-service
   metrics:
     - name: success-rate
-      interval: 5m
+      # interval: 5m
       successCondition: len(result) == 0 || result[0] >= 0.95
+      # successCondition: result[0] >= 0.95
       failureLimit: 2
       provider:
         prometheus:
           address: http://prometheus.istio-system.svc.cluster.local:9090
           query: |
-            sum(irate(
-              istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}",response_code!~"5.*"}[5m]
-            )) /
-            sum(irate(
-              istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}"}[5m]
-            ))
+            sum(istio_requests_total{reporter="source",response_code!~"5.*"})
+          # query: |
+          #   sum(irate(
+          #     istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}",response_code!~"5.*"}[5m]
+          #   )) /
+          #   sum(irate(
+          #     istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}"}[5m]
+          #   ))

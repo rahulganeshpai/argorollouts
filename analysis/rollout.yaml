@@ -7,8 +7,10 @@ metadata:
     app: rollouts-dev
     type: rollout
 spec:
-  revisionHistoryLimit: 1
-  replicas: 2
+  rollbackWindow:
+    revisions: 2
+  revisionHistoryLimit: 2
+  replicas: 3
   selector:
     matchLabels:
       app: rollouts-dev
@@ -21,14 +23,42 @@ spec:
       containers:
         - name: rollouts-dev
           image: helloworld:0.0.2
+          imagePullPolicy: IfNotPresent
           ports:
-            - name: http
+            - name: rollouts-port
               containerPort: 8080
               protocol: TCP
           resources:
             requests:
               memory: 20Mi
               cpu: 5m
+          startupProbe:
+            httpGet:
+              path: /
+              port: rollouts-port
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: rollouts-port
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: rollouts-port
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
   strategy:
     canary:
       canaryMetadata:
@@ -48,7 +78,9 @@ spec:
       analysis:
         templates:
           - templateName: success-rate
-        startingStep: 2 # delay starting analysis run until setWeight: 40%
+        # analysisRunMetadata:
+        #   labels:
+        #     type: analysisrun
         args:
           - name: canary-service
             value: rollouts-svc-canary
@@ -65,7 +97,9 @@ spec:
         - pause: { duration: 10s }
         - setWeight: 40
         - pause: { duration: 10s }
-        - setWeight: 60
-        - pause: { duration: 10s }
-        - setWeight: 80
+        - setWeight: 50
+        # - pause: { duration: 10s }
         - pause: {}
+        # - setWeight: 80
+        # - pause: { duration: 10s }
+        # - pause: {}

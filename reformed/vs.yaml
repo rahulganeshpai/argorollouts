@@ -1,0 +1,29 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: rollouts-vsvc1
+  namespace: dev
+  labels:
+    name: rollouts-vsvc1
+    type: virtualservice
+spec:
+  gateways:
+    - rollouts-gateway
+  hosts:
+    - rollouts-vsvc1.local
+  http:
+    - name: primary
+      match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: rollouts-svc-stable.dev.svc.cluster.local
+            port:
+              number: 8080
+          weight: 100
+        - destination:
+            host: rollouts-svc-canary.dev.svc.cluster.local
+            port:
+              number: 8080
+          weight: 0
