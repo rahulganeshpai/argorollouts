@@ -16,7 +16,7 @@ spec:
     canary:
       trafficRouting:
         istio:
-          virtualServices:
+          virtualService:
             name: rollouts-vs
             routes:
               - primary
@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.1
+          image: helloworld:0.0.2
           ports:
             - name: http
               containerPort: 8080
