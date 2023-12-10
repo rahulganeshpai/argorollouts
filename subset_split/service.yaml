@@ -1,0 +1,17 @@
+# k8s service
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollouts-svc
+  namespace: dev
+  labels:
+    name: rollouts-svc
+    type: service
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: tcp
+  selector:
+    name: rollouts-dev
