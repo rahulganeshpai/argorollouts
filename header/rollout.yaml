@@ -7,8 +7,8 @@ metadata:
     name: rollouts-dev
     type: rollout
 spec:
-  replicas: 2
-  revisionHistoryLimit: 2
+  replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       name: rollouts-dev
@@ -19,14 +19,11 @@ spec:
           rollout: canary
         labels:
           rollout: canary
-      stableMetadata:
-        annotations:
-          rollout: stable
-        labels:
-          rollout: stable
       canaryService: rollouts-svc-canary
       stableService: rollouts-svc-stable
       trafficRouting:
+        managedRoutes:
+          - name: "header-route-1"
         istio:
           virtualServices:
             - name: rollouts-vs
@@ -35,17 +32,18 @@ spec:
       steps:
         - setWeight: 20
         - pause: { duration: 10s }
-        - experiment:
-            duration: 40s
-            templates:
-              - name: canary
-                specRef: canary
-            analyses:
-              - name: webmetric
-                templateName: webmetric
-        - setWeight: 50
+        - setWeight: 40
         - pause: { duration: 10s }
-        # - pause: {}
+        - setWeight: 50
+        # - pause: { duration: 10s }
+        - setHeaderRoute:
+            name: "header-route-1"
+            match:
+              - headerName: header-version
+                headerValue:
+                  # regex: ^v[0-9]+$
+                  exact: v1
+        - pause: {}
   template:
     metadata:
       labels:
@@ -54,7 +52,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: liveness:0.0.2
+          image: helloworld:0.0.1
           ports:
             - name: http
               containerPort: 8080

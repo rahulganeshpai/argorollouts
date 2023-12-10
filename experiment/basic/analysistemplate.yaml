@@ -9,9 +9,16 @@ metadata:
 spec:
   metrics:
     - name: webmetric
-      successCondition: result.completed == true # Change this value to `result.completed == false` to fail the test
+      successCondition: result.message == "Service is healthy 3" # Change this value to `result.completed == false` to fail the test
       failureLimit: 2
       provider:
         web:
-          url: "https://jsonplaceholder.typicode.com/todos/4" # URL returns a JSON object with completed being one of the values, it returns true by default
+          url: "http://rollouts-svc-canary.dev.svc.cluster.local:8080/liveness" # URL returns a JSON object with completed being one of the values, it returns true by default
           timeoutSeconds: 10
+    # - name: webmetric
+    #   successCondition: result.completed == true # Change this value to `result.completed == false` to fail the test
+    #   failureLimit: 2
+    #   provider:
+    #     web:
+    #       url: "https://jsonplaceholder.typicode.com/todos/4" # URL returns a JSON object with completed being one of the values, it returns true by default
+    #       timeoutSeconds: 10
