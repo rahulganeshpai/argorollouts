@@ -14,11 +14,6 @@ spec:
       name: rollouts-dev
   strategy:
     canary:
-      canaryMetadata:
-        annotations:
-          rollout: canary
-        labels:
-          rollout: canary
       canaryService: rollouts-svc-canary
       stableService: rollouts-svc-stable
       trafficRouting:
@@ -52,7 +47,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.1
+          image: helloworld:0.0.2
           ports:
             - name: http
               containerPort: 8080
