@@ -1,3 +1,4 @@
+#!/bin/bash
 # Install Kind cluster
 kind create cluster --config=./kind/kind.yaml
 

@@ -7,10 +7,10 @@ metadata:
     app: rollouts-dev
     type: rollout
 spec:
-  rollbackWindow:
-    revisions: 2
-  revisionHistoryLimit: 2
-  replicas: 3
+  # rollbackWindow:
+  #   revisions: 1
+  revisionHistoryLimit: 1
+  replicas: 1
   selector:
     matchLabels:
       app: rollouts-dev
@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: rollouts-dev
-          image: helloworld:0.0.2
+          image: argoproj/rollouts-demo:red
           imagePullPolicy: IfNotPresent
           ports:
             - name: rollouts-port
@@ -32,33 +32,33 @@ spec:
             requests:
               memory: 20Mi
               cpu: 5m
-          startupProbe:
-            httpGet:
-              path: /
-              port: rollouts-port
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 30
-            successThreshold: 1
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /
-              port: rollouts-port
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 30
-            successThreshold: 1
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /
-              port: rollouts-port
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 30
-            successThreshold: 1
-            failureThreshold: 3
+          # startupProbe:
+          #   httpGet:
+          #     path: /
+          #     port: rollouts-port
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 30
+          #   timeoutSeconds: 30
+          #   successThreshold: 1
+          #   failureThreshold: 3
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: rollouts-port
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 30
+          #   timeoutSeconds: 30
+          #   successThreshold: 1
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: rollouts-port
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 30
+          #   timeoutSeconds: 30
+          #   successThreshold: 1
+          #   failureThreshold: 3
   strategy:
     canary:
       canaryMetadata:
@@ -84,8 +84,12 @@ spec:
         args:
           - name: canary-service
             value: rollouts-svc-canary
-          - name: stable-service
-            value: rollouts-svc-stable
+          # - name: stable-service
+          #   value: rollouts-svc-stable
+          - name: namespace
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
       trafficRouting:
         istio:
           virtualServices:
@@ -93,10 +97,10 @@ spec:
               routes:
                 - primary
       steps:
-        - setWeight: 20
-        - pause: { duration: 10s }
-        - setWeight: 40
-        - pause: { duration: 10s }
+        # - setWeight: 20
+        # - pause: { duration: 10s }
+        # - setWeight: 40
+        # - pause: { duration: 10s }
         - setWeight: 50
         # - pause: { duration: 10s }
         - pause: {}

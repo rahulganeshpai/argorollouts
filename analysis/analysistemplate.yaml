@@ -9,21 +9,35 @@ metadata:
 spec:
   args:
     - name: canary-service
+    - name: namespace
   metrics:
     - name: success-rate
-      # interval: 5m
-      successCondition: len(result) == 0 || result[0] >= 0.95
-      # successCondition: result[0] >= 0.95
-      failureLimit: 2
+      initialDelay: 5s
+      interval: 20s
+      successCondition: result[0] > 0.90
       provider:
         prometheus:
-          address: http://prometheus.istio-system.svc.cluster.local:9090
-          query: |
+          address: http://prometheus.istio-system:9090
+          query: >+
             sum(istio_requests_total{reporter="source",response_code!~"5.*"})
-          # query: |
-          #   sum(irate(
-          #     istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}",response_code!~"5.*"}[5m]
-          #   )) /
-          #   sum(irate(
-          #     istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}"}[5m]
-          #   ))
+
+  # args:
+  #   - name: canary-service
+  # metrics:
+  #   - name: success-rate
+  #     # interval: 5m
+  #     successCondition: len(result) == 0 || result[0] >= 0.95
+  #     # successCondition: result[0] >= 0.95
+  #     failureLimit: 2
+  #     provider:
+  #       prometheus:
+  #         address: http://prometheus.istio-system.svc.cluster.local:9090
+  #         query: |
+  #           sum(istio_requests_total{reporter="source",response_code!~"5.*"})
+  #         # query: |
+  #         #   sum(irate(
+  #         #     istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}",response_code!~"5.*"}[5m]
+  #         #   )) /
+  #         #   sum(irate(
+  #         #     istio_requests_total{reporter="source",destination_service=~"{{args.canary-service}}"}[5m]
+  #         #   ))

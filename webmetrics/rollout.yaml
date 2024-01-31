@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rollouts-dev
+  namespace: dev
+  labels:
+    name: rollouts-dev
+    type: rollout
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      name: rollouts-dev
+  strategy:
+    canary:
+      canaryService: rollouts-svc-canary
+      stableService: rollouts-svc-stable
+      trafficRouting:
+        managedRoutes:
+          - name: "header-route-1"
+        istio:
+          virtualServices:
+            - name: rollouts-vs
+              routes:
+                - primary
+      steps:
+        - setWeight: 20
+        - pause: { duration: 10s }
+        - setWeight: 30
+        - setHeaderRoute:
+            name: "header-route-1"
+            match:
+              - headerName: header-version
+                headerValue:
+                  # regex: ^v[0-9]+$
+                  exact: v1
+        - analysis:
+            templates:
+              - templateName: success-rate
+        - pause: { duration: 10s }
+        - setWeight: 50
+        - pause: {}
+  template:
+    metadata:
+      labels:
+        name: rollouts-dev
+        type: pod
+    spec:
+      containers:
+        - name: rollouts-dev
+          image: argoproj/rollouts-demo:red
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              memory: 20Mi
+              cpu: 2m

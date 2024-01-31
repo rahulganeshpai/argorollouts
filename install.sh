@@ -1,3 +1,4 @@
+#!/bin/bash
 # Install minikube and addons
 rm -r ~/.minikube
 minikube start --memory=8192mb --cpus=4
