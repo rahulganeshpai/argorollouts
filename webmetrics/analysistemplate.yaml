@@ -18,3 +18,5 @@ spec:
           headers:
             - key: header-version
               value: v1
+            - key: Content-Type
+              value: "application/json"
